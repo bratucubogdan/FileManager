@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://thymeleaf.org">
+<link rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+      integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+      crossorigin="anonymous">
+<head>
+
+    <meta charset="UTF-8">
+    <title>Files</title>
+</head>
+<body>
+    <div class="container">
+        <h2>File list</h2>
+        <hr/>
+
+        <table class="table table-bordered table-striped">
+
+            <thead>
+                <tr>
+                    <th>Nume</th>
+                    <th>Institutia de provenienta</th>
+                    <th>Tipul documentului</th>
+                    <th>Numar de inregistrare</th>
+                    <th>An Incarcare</th>
+                </tr>
+
+            </thead>
+            <tbody>
+
+                <tr th:each="file: ${files}">
+                    <td th:text="${file.getName()}"></td>
+                    <td th:text="${file.getMainFieldOfInterest()}"></td>
+                    <td th:text="${file.getSecondaryFieldOfInterest()}"></td>
+                    <td th:text="${file.getRegistrationNumber()}"></td>
+                    <td th:text="${file.getYear1()}"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <a th:href="@{/addFile}" class="btn btn-dark text-white" >Add File</a>
+
+    </div>
+</body>
+</html>
