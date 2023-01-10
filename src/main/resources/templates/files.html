@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <link rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
       integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
@@ -25,6 +24,7 @@
                     <th>Tipul documentului</th>
                     <th>Numar de inregistrare</th>
                     <th>An Incarcare</th>
+                    <th>Comenzi</th>
                 </tr>
 
             </thead>
@@ -36,6 +36,9 @@
                     <td th:text="${file.getSecondaryFieldOfInterest()}"></td>
                     <td th:text="${file.getRegistrationNumber()}"></td>
                     <td th:text="${file.getYear1()}"></td>
+                    <td>
+                        <a th:href="@{'/download/' + ${file.getId()}}"  class="btn btn-dark text-white">Download</a>
+                    </td>
                 </tr>
             </tbody>
         </table>

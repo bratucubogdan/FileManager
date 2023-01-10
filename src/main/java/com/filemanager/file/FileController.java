@@ -1,7 +1,14 @@
 package com.filemanager.file;
 
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -10,8 +17,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 
 @RestController
@@ -68,4 +77,14 @@ public class FileController {
         response.sendRedirect("/allFiles");
 
     }
+
+    @GetMapping("/download/{id}")
+    @ResponseBody
+    public ResponseEntity<byte[]> downloadFile (@PathVariable Long id){
+    byte[] data = fileService.getFilebyId(id).getData();
+    return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileService.getFilebyId(id).getName()+ "\"")
+            .body(data);
+
+    }
+
 }
