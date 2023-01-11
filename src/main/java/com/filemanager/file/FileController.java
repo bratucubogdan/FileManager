@@ -21,6 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.http.HttpClient;
 import java.util.List;
 
 @RestController
@@ -59,13 +60,12 @@ public class FileController {
         return mav;
     }
     @PostMapping("/saveFile")
-    public void saveFile(@RequestParam("file") MultipartFile file, @RequestParam("name") String name, @RequestParam("mainFieldOfInterest") String mainFieldOfInterest, @RequestParam("secondaryFieldOfInterest") String secondaryFieldOfInterest, @RequestParam("registrationNumber") String registrationNumber, HttpServletResponse response) throws IOException {
+    public void saveFile(@RequestParam("file") MultipartFile file, @RequestParam("mainFieldOfInterest") String mainFieldOfInterest, @RequestParam("secondaryFieldOfInterest") String secondaryFieldOfInterest, @RequestParam("registrationNumber") String registrationNumber, HttpServletResponse response) throws IOException {
         FileModel fileUpload = fileService.upload(file);
         if(!file.isEmpty()){
              try{
                 byte[] bytes = file.getBytes();
                 fileUpload.setData(bytes);
-                fileUpload.setName(name);
                 fileUpload.setMainFieldOfInterest(mainFieldOfInterest);
                 fileUpload.setSecondaryFieldOfInterest(secondaryFieldOfInterest);
                 fileUpload.setRegistrationNumber(registrationNumber);
@@ -85,6 +85,12 @@ public class FileController {
     return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileService.getFilebyId(id).getName()+ "\"")
             .body(data);
 
+    }
+
+    @GetMapping("/junk/{id}")
+    public void deleteFile (@PathVariable Long id, HttpServletResponse response) throws IOException {
+        fileRepository.deleteById(id);
+        response.sendRedirect("/allFiles");
     }
 
 }

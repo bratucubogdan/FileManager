@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <link rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
       integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
@@ -19,7 +18,6 @@
     <form th:action="@{/saveFile}" enctype="multipart/form-data" method="post" modelAttribute="fileToSave">
       <div class="form-group">
 
-        <input type="text" name="name"><br/><br/>
 
         <input type="text" name="mainFieldOfInterest" placeholder="Institutia de provenienta"><br/><br/>
 
