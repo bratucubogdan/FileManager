@@ -3,8 +3,11 @@ package com.filemanager.file;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.Banner;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.repository.query.Param;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,6 +25,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.http.HttpClient;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -33,20 +40,24 @@ public class FileController {
     FileRepository fileRepository;
 
     @PostMapping("/upload")
-    public FileModel upload (@RequestParam String main, @RequestParam String secondary, @RequestParam(required = false) String registrationNumber, @RequestParam("file") MultipartFile file) throws IOException{
+    public void upload (@RequestParam String main, @RequestParam String secondary, @RequestParam(required = false) String registrationNumber,  @DateTimeFormat(pattern = "dd/MM/yyyy") Date numberDate, @RequestParam("file") MultipartFile file, HttpServletResponse response) throws IOException, ParseException {
         FileModel fileToSave = fileService.upload(file);
         fileToSave.setMainFieldOfInterest(main);
         fileToSave.setSecondaryFieldOfInterest(secondary);
         fileToSave.setRegistrationNumber(registrationNumber);
-        return fileRepository.save(fileToSave);
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        fileRepository.save(fileToSave);
+        response.sendRedirect("/");
 
 
     }
 
-    @GetMapping(value = "/allFiles")
-    public ModelAndView files(){
+    @RequestMapping(path = "/")
+    public ModelAndView files() {
         ModelAndView mav = new ModelAndView("files");
-        List<FileModel> list = fileRepository.findAll();
+        List<FileModel> list;
+        list = fileService.findAllFiles();
         mav.addObject("files", list);
         return mav;
     }
@@ -60,8 +71,9 @@ public class FileController {
         return mav;
     }
     @PostMapping("/saveFile")
-    public void saveFile(@RequestParam("file") MultipartFile file, @RequestParam("mainFieldOfInterest") String mainFieldOfInterest, @RequestParam("secondaryFieldOfInterest") String secondaryFieldOfInterest, @RequestParam("registrationNumber") String registrationNumber, HttpServletResponse response) throws IOException {
+    public void saveFile(@RequestParam("file") MultipartFile file, @RequestParam("mainFieldOfInterest") String mainFieldOfInterest, @RequestParam("secondaryFieldOfInterest") String secondaryFieldOfInterest, @RequestParam("registrationNumber") String registrationNumber, @RequestParam("numberDate") Date numberDate, HttpServletResponse response) throws IOException {
         FileModel fileUpload = fileService.upload(file);
+
         if(!file.isEmpty()){
              try{
                 byte[] bytes = file.getBytes();
@@ -69,12 +81,16 @@ public class FileController {
                 fileUpload.setMainFieldOfInterest(mainFieldOfInterest);
                 fileUpload.setSecondaryFieldOfInterest(secondaryFieldOfInterest);
                 fileUpload.setRegistrationNumber(registrationNumber);
+                SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+                 DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                 numberDate = formatter.parse(formatter.format(numberDate));
+                fileUpload.setNumberDate(numberDate);
             } catch (Exception e){
 
              }
         }
         fileRepository.save(fileUpload);
-        response.sendRedirect("/allFiles");
+        response.sendRedirect("/");
 
     }
 
@@ -90,7 +106,17 @@ public class FileController {
     @GetMapping("/junk/{id}")
     public void deleteFile (@PathVariable Long id, HttpServletResponse response) throws IOException {
         fileRepository.deleteById(id);
-        response.sendRedirect("/allFiles");
+        response.sendRedirect("/");
+    }
+    @RequestMapping("/search")
+    public ModelAndView modelAndView(@RequestParam(name = "mainField", required = false) String mainField, @RequestParam(name = "secondaryField", required = false) String secondaryField, @RequestParam(name = "registrationNumber", required = false) String registrationNumber){
+        List<FileModel> listFilter= fileService.filter(mainField, secondaryField, registrationNumber);
+        ModelAndView modelAndView = new ModelAndView("search");
+        modelAndView.addObject("filesFilter", listFilter);
+        return modelAndView;
     }
 
+
 }
+
+

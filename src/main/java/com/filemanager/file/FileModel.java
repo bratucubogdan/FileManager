@@ -1,6 +1,10 @@
 package com.filemanager.file;
 
 import jakarta.persistence.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDate;
+import java.util.Date;
 
 @Entity
 public class FileModel {
@@ -11,7 +15,9 @@ public class FileModel {
     private String mainFieldOfInterest;
     private String secondaryFieldOfInterest;
     private String registrationNumber;
-    private String year1;
+    private String date;
+    private Date numberDate;
+
     private String type;
     @Lob
     private byte[] data;
@@ -20,14 +26,23 @@ public class FileModel {
 
     }
 
-    public FileModel(String name, String mainFieldOfInterest, String secondaryFieldOfInterest, String registrationNumber, String year, String type, byte[] data) {
+    public FileModel(String name, String mainFieldOfInterest, String secondaryFieldOfInterest, String registrationNumber, Date numberDate, String date,  String type, byte[] data) {
         this.name = name;
         this.mainFieldOfInterest = mainFieldOfInterest;
         this.secondaryFieldOfInterest = secondaryFieldOfInterest;
         this.registrationNumber = registrationNumber;
-        this.year1 = year;
+        this.numberDate = numberDate;
+        this.date = date;
         this.type = type;
         this.data = data;
+    }
+
+    public Date getNumberDate() {
+        return numberDate;
+    }
+
+    public void setNumberDate(Date numberDate) {
+        this.numberDate = numberDate;
     }
 
     public long getId() {
@@ -66,12 +81,12 @@ public class FileModel {
         this.registrationNumber = registrationNumber;
     }
 
-    public String getYear1() {
-        return year1;
+    public String getDate() {
+        return date;
     }
 
-    public void setYear1(String year) {
-        this.year1 = year;
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public String getType() {

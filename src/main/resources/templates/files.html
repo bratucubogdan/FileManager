@@ -12,6 +12,24 @@
     <div class="container">
         <h2>File list</h2>
         <hr/>
+        <div class="container">
+            <div class="row">
+                <div class="row mb-4">
+                    <div class="col">
+                        <input type="text" class="form-control" id="mainField" aria-describedby="emailHelp" placeholder="Institutia de provenienta" th:name="mainField">
+                    </div>
+                    <div class="col">
+                        <input type="text" class="form-control" id="secondaryField" aria-describedby="emailHelp" placeholder="Tipul documentului" th:name="secondaryField">
+                    </div>
+                    <div class="col">
+                        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Numar de inregistrare" th:name="registrationNumber">
+                    </div>
+                    <div class="col-1 mx-auto">
+                        <a th:href="@{/}" class="btn btn-dark text-white" >Search</a>
+                    </div>
+                </div>
+
+
 
         <table class="table table-bordered table-striped">
 
@@ -21,7 +39,8 @@
                     <th class=" text-center">Institutia de provenienta</th>
                     <th class=" text-center">Tipul documentului</th>
                     <th class=" text-center">Numar de inregistrare</th>
-                    <th class=" text-center">An Incarcare</th>
+                    <th class=" text-center">Data inregestrare</th>
+                    <th class=" text-center">Data Incarcare</th>
                     <th class=" text-center">Comenzi</th>
                 </tr>
 
@@ -33,9 +52,9 @@
                     <td class=" text-center" th:text="${file.getMainFieldOfInterest()}"></td>
                     <td class=" text-center" th:text="${file.getSecondaryFieldOfInterest()}"></td>
                     <td class=" text-center" th:text="${file.getRegistrationNumber()}"></td>
-                    <td class=" text-center" th:text="${file.getYear1()}"></td>
+                    <td class=" text-center" th:text="${file.getNumberDate()}"></td>
+                    <td class=" text-center" th:text="${file.getDate()}"></td>
                     <td class=" text-center">
-
                         <div class="dropdown justify-content-center">
                             <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Menu

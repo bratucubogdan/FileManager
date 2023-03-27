@@ -25,10 +25,11 @@
 
         <input type="text" name="registrationNumber" placeholder="Numar de inregistrare"><br/><br/>
 
+        <input type="text" name="numberDate" placeholder="Data Numar Inregistrare"><br/><br/>
         <div class="form-group">
           <div class="custom-file">
             <input type="file" class="custom-file-input" id="customFile" name="file">
-            <label class="custom-file-label" for="customFile">Choose file</label>
+            <label class="custom-file-label" for="customFile"></label>
           </div>
 
       </div>
@@ -36,7 +37,7 @@
       <button class="btn btn-dark text-white" type="submit">Upload</button>
     </form>
     <hr/>
-    <a th:href="@{/files}">Back to Files</a>
+    <a th:href="@{/}">Back to Files</a>
   </div>
 
 </body>
