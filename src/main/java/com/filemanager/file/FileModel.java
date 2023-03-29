@@ -9,7 +9,7 @@ import java.util.Date;
 @Entity
 public class FileModel {
     @Id
-    @GeneratedValue (strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     private String name;
     private String mainFieldOfInterest;
@@ -22,11 +22,11 @@ public class FileModel {
     @Lob
     private byte[] data;
 
-    public FileModel(){
+    public FileModel() {
 
     }
 
-    public FileModel(String name, String mainFieldOfInterest, String secondaryFieldOfInterest, String registrationNumber, Date numberDate, String date,  String type, byte[] data) {
+    public FileModel(String name, String mainFieldOfInterest, String secondaryFieldOfInterest, String registrationNumber, Date numberDate, String date, String type, byte[] data) {
         this.name = name;
         this.mainFieldOfInterest = mainFieldOfInterest;
         this.secondaryFieldOfInterest = secondaryFieldOfInterest;

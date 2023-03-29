@@ -1,10 +1,8 @@
 package com.filemanager.file;
 
-import jakarta.persistence.Id;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,8 +12,10 @@ import java.util.List;
 public interface FileRepository extends JpaRepository<FileModel, Long> {
     FileModel getFileModelById(Long id);
 
-
-    List<FileModel>  getFileModelByMainFieldOfInterestOrSecondaryFieldOfInterestOrRegistrationNumber(@Param("mainField") String mainFieldOfInterest, @Param("secondaryField") String secondaryFieldOfInterest, @Param("registrationNumber") String registrationNumber);
-
-
+    @Query("SELECT f FROM FileModel f " +
+            "WHERE (:mainFieldOfInterest IS NULL OR f.mainFieldOfInterest LIKE %:mainFieldOfInterest%) " +
+            "AND (:secondaryFieldOfInterest IS NULL OR f.secondaryFieldOfInterest LIKE %:secondaryFieldOfInterest%)" +
+            "AND (:registrationNumber IS NULL OR  f.registrationNumber LIKE %:registrationNumber%)"
+    )
+    List<FileModel> searchByFields(String mainFieldOfInterest, String secondaryFieldOfInterest, String registrationNumber);
 }
