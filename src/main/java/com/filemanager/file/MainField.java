@@ -1,6 +1,6 @@
 package com.filemanager.file;
 
-public enum RegistrationNumber {
+public enum MainField {
     CASA,
     CJI,
     DSP,

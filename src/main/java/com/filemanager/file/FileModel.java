@@ -16,6 +16,7 @@ public class FileModel {
     private String secondaryFieldOfInterest;
     private String registrationNumber;
     private String date;
+
     private Date numberDate;
 
     private String type;

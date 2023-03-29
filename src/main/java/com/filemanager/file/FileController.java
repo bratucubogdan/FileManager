@@ -2,6 +2,7 @@ package com.filemanager.file;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,9 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
@@ -33,7 +37,7 @@ public class FileController {
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         fileRepository.save(fileToSave);
-        response.sendRedirect("/");
+        response.sendRedirect("/search");
 
 
     }
@@ -42,13 +46,23 @@ public class FileController {
     public ModelAndView files(
             @RequestParam(value = "mainFieldOfInterest", required = false) String mainFieldOfInterest,
             @RequestParam(value = "secondaryFieldOfInterest", required = false) String secondaryFieldOfInterest,
-            @RequestParam(value = "registrationNumber", required = false) String registrationNumber
-            ) {
+            @RequestParam(value = "numberDate", required = false) String numberDate
+    ) throws ParseException {
         ModelAndView mav = new ModelAndView("files");
         List<FileModel> list;
-        list = fileService.searchByFields(mainFieldOfInterest, secondaryFieldOfInterest, registrationNumber);
+        String mainField = mainFieldOfInterest == "" ? null : mainFieldOfInterest;
+        String secondField = secondaryFieldOfInterest == "" ? null : secondaryFieldOfInterest;
+        Date haleluiaDate = null;
+        if (numberDate != null && numberDate != "") {
+            Date numberDateFormated = new SimpleDateFormat("yyyy-MM-dd").parse(numberDate);
+            SimpleDateFormat goodDateFormat = new SimpleDateFormat("MM/dd/yyyy");
+            String hope = goodDateFormat.format(numberDateFormated);
+            haleluiaDate = goodDateFormat.parse(hope);
+        }
+        list = fileService.searchByFields(mainField, secondField, haleluiaDate);
         mav.addObject("files", list);
         return mav;
+
     }
 
     @GetMapping("/addFile")
@@ -61,8 +75,17 @@ public class FileController {
     }
 
     @PostMapping("/saveFile")
-    public void saveFile(@RequestParam("file") MultipartFile file, @RequestParam("mainFieldOfInterest") String mainFieldOfInterest, @RequestParam("secondaryFieldOfInterest") String secondaryFieldOfInterest, @RequestParam("registrationNumber") String registrationNumber, @RequestParam("numberDate") Date numberDate, HttpServletResponse response) throws IOException {
+    public void saveFile(@RequestParam("file") MultipartFile file,
+                         @RequestParam("mainFieldOfInterest") String mainFieldOfInterest,
+                         @RequestParam("secondaryFieldOfInterest") String secondaryFieldOfInterest,
+                         @RequestParam("registrationNumber") String registrationNumber,
+                         @RequestParam("numberDate") @DateTimeFormat(pattern = "MM/dd/yyyy") String numberDate,
+                         HttpServletResponse response) throws IOException, ParseException {
         FileModel fileUpload = fileService.upload(file);
+        Date numberDateFormated = new SimpleDateFormat("yyyy-MM-dd").parse(numberDate);
+        SimpleDateFormat goodDateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        String hope = goodDateFormat.format(numberDateFormated);
+        Date haleluiaDate = goodDateFormat.parse(hope);
 
         if (!file.isEmpty()) {
             try {
@@ -71,16 +94,15 @@ public class FileController {
                 fileUpload.setMainFieldOfInterest(mainFieldOfInterest);
                 fileUpload.setSecondaryFieldOfInterest(secondaryFieldOfInterest);
                 fileUpload.setRegistrationNumber(registrationNumber);
-                SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-                DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                numberDate = formatter.parse(formatter.format(numberDate));
-                fileUpload.setNumberDate(numberDate);
+                fileUpload.setNumberDate(haleluiaDate);
+
+
             } catch (Exception e) {
 
             }
         }
         fileRepository.save(fileUpload);
-        response.sendRedirect("/");
+        response.sendRedirect("/search");
 
     }
 

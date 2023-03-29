@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <html xmlns:th="http://www.thymeleaf.org">
-<link rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
-      integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
       crossorigin="anonymous">
 
 <head>
@@ -12,33 +11,45 @@
 </head>
 <body>
 
-  <div class="container">
+<div class="container">
     <h2>Add File</h2>
     <hr/>
     <form th:action="@{/saveFile}" enctype="multipart/form-data" method="post" modelAttribute="fileToSave">
-      <div class="form-group">
-
-
-        <input type="text" name="mainFieldOfInterest" placeholder="Institutia de provenienta"><br/><br/>
-
-        <input type="text" name="secondaryFieldOfInterest" placeholder="Tipul documentului"><br/><br/>
-
-        <input type="text" name="registrationNumber" placeholder="Numar de inregistrare"><br/><br/>
-
-        <input type="text" name="numberDate" placeholder="Data Numar Inregistrare"><br/><br/>
         <div class="form-group">
-          <div class="custom-file">
-            <input type="file" class="custom-file-input" id="customFile" name="file">
-            <label class="custom-file-label" for="customFile"></label>
-          </div>
 
-      </div>
-      </div>
-      <button class="btn btn-dark text-white" type="submit">Upload</button>
+
+            <select class="form-select w-100 p-2" aria-label="Default select example"
+                    id="mainFieldOfInterest" name="mainFieldOfInterest">
+                <option selected th:value="null">Institutia de provenienta</option>
+                <option th:each="mainField : ${T(com.filemanager.file.MainField).values()}"
+                        th:value="${mainField}" th:text="${mainField}"></option>
+            </select><br/><br/>
+
+            <select class="form-select w-100 p-2" aria-label="Default select example" id="secondaryFieldOfInterest"
+                    name="secondaryFieldOfInterest">
+                <option selected th:value="null">Tipul documentului</option>
+                <option th:each="secondField : ${T(com.filemanager.file.SecondField).values()}"
+                        th:value="${secondField}" th:text="${secondField}"></option>
+            </select><br/><br/>
+
+            <input type="text" name="registrationNumber" placeholder="Numar de inregistrare" class="form-select w-100 p-2"><br/><br/>
+
+            <input type="date" id="numberDate" name="numberDate" class="form-control"><br/><br/>
+
+
+            <div class="form-group">
+                <div class="custom-file">
+                    <input  class="form-control" type="file" id="file-model" name="file">
+                </div>
+
+            </div>
+        </div>
+        <br/><br/>
+        <button class="btn btn-dark text-white" type="submit">Upload</button>
     </form>
     <hr/>
-    <a th:href="@{/}">Back to Files</a>
-  </div>
+    <a th:href="@{/search}">Back to Files</a>
+</div>
 
 </body>
 </html>

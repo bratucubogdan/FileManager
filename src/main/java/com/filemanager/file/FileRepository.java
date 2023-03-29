@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -13,9 +15,9 @@ public interface FileRepository extends JpaRepository<FileModel, Long> {
     FileModel getFileModelById(Long id);
 
     @Query("SELECT f FROM FileModel f " +
-            "WHERE (:mainFieldOfInterest IS NULL OR f.mainFieldOfInterest LIKE %:mainFieldOfInterest%) " +
-            "AND (:secondaryFieldOfInterest IS NULL OR f.secondaryFieldOfInterest LIKE %:secondaryFieldOfInterest%)" +
-            "AND (:registrationNumber IS NULL OR  f.registrationNumber LIKE %:registrationNumber%)"
+            "WHERE (:mainFieldOfInterest IS NULL OR f.mainFieldOfInterest = :mainFieldOfInterest) " +
+            "AND (:secondaryFieldOfInterest IS NULL OR f.secondaryFieldOfInterest = :secondaryFieldOfInterest)" +
+            "AND (:numberDate IS NULL OR f.numberDate = :numberDate)"
     )
-    List<FileModel> searchByFields(String mainFieldOfInterest, String secondaryFieldOfInterest, String registrationNumber);
+    List<FileModel> searchByFields(String mainFieldOfInterest, String secondaryFieldOfInterest, Date numberDate);
 }
