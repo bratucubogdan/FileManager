@@ -42,7 +42,7 @@ public class FileController {
 
     }
 
-    @RequestMapping(value = {"/search"})
+    @GetMapping(value = {"/search"})
     public ModelAndView files(
             @RequestParam(value = "mainFieldOfInterest", required = false) String mainFieldOfInterest,
             @RequestParam(value = "secondaryFieldOfInterest", required = false) String secondaryFieldOfInterest,
@@ -120,13 +120,7 @@ public class FileController {
         fileRepository.deleteById(id);
         response.sendRedirect("/");
     }
-//    @RequestMapping("/search")
-//    public ModelAndView modelAndView(@RequestParam(name = "mainField", required = false) String mainField, @RequestParam(name = "secondaryField", required = false) String secondaryField, @RequestParam(name = "registrationNumber", required = false) String registrationNumber){
-//        List<FileModel> listFilter= fileService.filter(mainField, secondaryField, registrationNumber);
-//        ModelAndView modelAndView = new ModelAndView("search");
-//        modelAndView.addObject("filesFilter", listFilter);
-//        return modelAndView;
-//    }
+
 
 
 }
