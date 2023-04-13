@@ -5,11 +5,17 @@ import com.filemanager.UserConfig.Role;
 import com.filemanager.UserConfig.User;
 import com.filemanager.UserConfig.UserRepository;
 import com.filemanager.security.JwtService;
+import jakarta.servlet.*;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -48,8 +54,6 @@ public class AuthenticationService {
                 .token(jwtToken)
                 .build();
     }
-
-
 
 
 }

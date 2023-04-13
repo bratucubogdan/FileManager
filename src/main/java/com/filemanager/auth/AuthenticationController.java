@@ -1,14 +1,13 @@
 package com.filemanager.auth;
 
-import com.filemanager.file.FileModel;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 
@@ -19,15 +18,15 @@ public class AuthenticationController {
 
     private final AuthenticationService service;
 
-    public String getToken() {
-        return token;
-    }
+    private final Token token;
 
-    private String token;
 
-    @ModelAttribute
-    public void setRequestHeader(HttpServletResponse response) {
-        response.setHeader("Authorization", "Bearer " + token);
+
+    
+    public void Token(Model model) {
+        String hope = token.getToken();
+        model.addAttribute("token", hope);
+
     }
 
     @GetMapping("/registerForm")
@@ -56,15 +55,24 @@ public class AuthenticationController {
     }
 
     @PostMapping("/authenticate")
-    public void authenticate(
-            @ModelAttribute("authRequest") AuthenticationRequest request,
-            HttpServletResponse response
-    ) throws IOException {
-        token = service.authenticate(request).getToken();
-        System.out.println(token);
+    public void authenticate(@ModelAttribute("authRequest") AuthenticationRequest request, HttpServletResponse response) throws IOException {
+        // Authenticate the user and get the JWT token
+        token.setToken(service.authenticate(request).getToken());
+        String jwtToken = token.getToken();
+        System.out.println(service.authenticate(request).getToken());
+        // Set the JWT token as a cookie in the response
+        Cookie cookie = new Cookie("jwtToken", jwtToken);
+        cookie.setMaxAge(3600); // set the cookie to expire in 1 hour
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
 
-        response.sendRedirect("/search");
+        // Redirect the user to the file search page
+        response.sendRedirect("/api/v1/file/search");
     }
+
+
+
 
 
 }
