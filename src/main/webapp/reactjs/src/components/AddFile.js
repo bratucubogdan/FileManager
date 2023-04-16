@@ -3,7 +3,7 @@ import {Card, Form, Button} from "react-bootstrap";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faPlusSquare, faSave, faUndo} from '@fortawesome/free-solid-svg-icons'
 import MyToast   from "./MyToast";
-
+import axiosInstance from "./Axios";
 import axios from "axios";
 export default class AddFile extends React.Component {
     constructor(props) {
@@ -38,7 +38,7 @@ export default class AddFile extends React.Component {
         formData.append('fileUpload', this.state.fileUpload);
 
 
-        axios.post("http://localhost:8080/api/v1/file/upload", formData)
+        axiosInstance.post("/upload", formData)
             .then(response => {
                 console.log(response);
                 if (response.data != null) {
