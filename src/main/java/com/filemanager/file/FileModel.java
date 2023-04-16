@@ -17,7 +17,7 @@ public class FileModel {
     private String registrationNumber;
     private String date;
 
-    private Date numberDate;
+    private LocalDate numberDate;
 
     private String type;
     @Lob
@@ -27,7 +27,7 @@ public class FileModel {
 
     }
 
-    public FileModel(String name, String mainFieldOfInterest, String secondaryFieldOfInterest, String registrationNumber, Date numberDate, String date, String type, byte[] data) {
+    public FileModel(String name, String mainFieldOfInterest, String secondaryFieldOfInterest, String registrationNumber, LocalDate numberDate, String date, String type, byte[] data) {
         this.name = name;
         this.mainFieldOfInterest = mainFieldOfInterest;
         this.secondaryFieldOfInterest = secondaryFieldOfInterest;
@@ -38,11 +38,11 @@ public class FileModel {
         this.data = data;
     }
 
-    public Date getNumberDate() {
+    public LocalDate getNumberDate() {
         return numberDate;
     }
 
-    public void setNumberDate(Date numberDate) {
+    public void setNumberDate(LocalDate numberDate) {
         this.numberDate = numberDate;
     }
 

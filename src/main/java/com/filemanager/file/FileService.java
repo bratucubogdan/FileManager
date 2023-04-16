@@ -12,26 +12,30 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class FileService {
     @Autowired
     FileRepository fileRepository;
 
-    public FileModel upload(MultipartFile file) throws IOException, ParseException {
-        String name = StringUtils.cleanPath(file.getOriginalFilename());
+    public FileModel upload(MultipartFile fileUpload) throws IOException, ParseException {
+        String name = "";
+        if(!StringUtils.cleanPath(Objects.requireNonNull(fileUpload.getOriginalFilename())).isEmpty()){
+            name = StringUtils.cleanPath(Objects.requireNonNull(fileUpload.getOriginalFilename()));
+        }
         String mainField = "";
         String secondaryField = "";
         String registrationNumber = "";
-        Date numberDate = new Date();
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        LocalDate numberDate = null;
 
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         Date yearSystem = new Date(System.currentTimeMillis());
         String upDate = format.format(yearSystem);
-        String type = file.getContentType().replaceAll("aplication/", "").toUpperCase();
+        String type = fileUpload.getContentType().replaceAll("aplication/", "").toUpperCase();
 
 
-        byte[] data = file.getBytes();
+        byte[] data = fileUpload.getBytes();
         FileModel fileDb = new FileModel(name, mainField, secondaryField, registrationNumber, numberDate, upDate, type, data);
         return fileDb;
     }
@@ -40,7 +44,7 @@ public class FileService {
         return fileRepository.getFileModelById(id);
     }
 
-    public List<FileModel> searchByFields(String mainFieldOfInterest, String secondaryFieldOfInterest, Date numberDate) {
-        return fileRepository.searchByFields(mainFieldOfInterest, secondaryFieldOfInterest, numberDate);
+    public List<FileModel> searchByFields(String mainFieldOfInterest, String secondaryFieldOfInterest, String registrationNumber, LocalDate numberDate) {
+        return fileRepository.searchByFields(mainFieldOfInterest, secondaryFieldOfInterest, registrationNumber, numberDate);
     }
 }

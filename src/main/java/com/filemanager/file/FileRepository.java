@@ -17,7 +17,8 @@ public interface FileRepository extends JpaRepository<FileModel, Long> {
     @Query("SELECT f FROM FileModel f " +
             "WHERE (:mainFieldOfInterest IS NULL OR f.mainFieldOfInterest = :mainFieldOfInterest) " +
             "AND (:secondaryFieldOfInterest IS NULL OR f.secondaryFieldOfInterest = :secondaryFieldOfInterest)" +
+            "AND (:registrationNumber IS NULL OR f.registrationNumber LIKE %:registrationNumber%)" +
             "AND (:numberDate IS NULL OR f.numberDate = :numberDate)"
     )
-    List<FileModel> searchByFields(String mainFieldOfInterest, String secondaryFieldOfInterest, Date numberDate);
+    List<FileModel> searchByFields(String mainFieldOfInterest, String secondaryFieldOfInterest, String registrationNumber, LocalDate numberDate);
 }

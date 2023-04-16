@@ -1,12 +1,13 @@
 package com.filemanager.file;
 
-import com.filemanager.auth.AuthenticationController;
-import com.filemanager.auth.Token;
-import com.filemanager.security.AuthorizationHeaderInterceptor;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -16,149 +17,85 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = "http://localhost:3000/")
 @RequestMapping("/api/v1/file")
 public class FileController {
     @Autowired
     FileService fileService;
 
-    @Autowired
-    Token token;
-    @Autowired
-    AuthenticationController controller;
 
     @Autowired
     FileRepository fileRepository;
 
-    @Autowired
-    RestTemplate restTemplate;
 
     @PostMapping("/upload")
-    public void upload(@RequestParam String main, @RequestParam String secondary, @RequestParam(required = false) String registrationNumber, @DateTimeFormat(pattern = "dd/MM/yyyy") Date numberDate, @RequestParam("file") MultipartFile file, HttpServletResponse response) throws IOException, ParseException {
-        AuthorizationHeaderInterceptor interceptor = new AuthorizationHeaderInterceptor(token.getToken());
-        restTemplate.getInterceptors().add(interceptor);
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://localhost:8080/api/v1/file/upload", file, String.class);
-        FileModel fileToSave = fileService.upload(file);
+    public void upload(@RequestParam MultipartFile fileUpload,
+                       @RequestParam("mainFieldOfInterest") String main,
+                       @RequestParam("secondaryFieldOfInterest") String second,
+                       @RequestParam("registrationNumber") String rNum,
+                       @RequestParam("numberDate") String numberDate
+    ) throws IOException, ParseException {;
+        FileModel fileToSave = fileService.upload(fileUpload);
         fileToSave.setMainFieldOfInterest(main);
-        fileToSave.setSecondaryFieldOfInterest(secondary);
-        fileToSave.setRegistrationNumber(registrationNumber);
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        fileToSave.setSecondaryFieldOfInterest(second);
+        fileToSave.setRegistrationNumber(rNum);
+        String format = "yyyy-MM-dd";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+        LocalDate date = LocalDate.parse(numberDate, formatter);
+        fileToSave.setNumberDate(date);
         fileRepository.save(fileToSave);
-        response.sendRedirect("/api/v1/file/search");
-
 
     }
 
-    @GetMapping(value = {"/search"})
-    public ModelAndView files(
-            @RequestParam(value = "mainFieldOfInterest", required = false) String mainFieldOfInterest,
-            @RequestParam(value = "secondaryFieldOfInterest", required = false) String secondaryFieldOfInterest,
-            @RequestParam(value = "numberDate", required = false) String numberDate
-    ) throws ParseException {
-
-        AuthorizationHeaderInterceptor interceptor = new AuthorizationHeaderInterceptor(token.getToken());
-        restTemplate.getInterceptors().add(interceptor);
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity("http://localhost:8080/api/v1/file/search", String.class);
-
-        ModelAndView mav = new ModelAndView("files");
+    @GetMapping(value = {"/allFiles"})
+    public ResponseEntity<List<FileModel>> files(
+            @RequestParam(value = "mainSearch", required = false) String mainFieldOfInterest,
+            @RequestParam(value = "secondarySearch", required = false) String secondaryFieldOfInterest,
+            @RequestParam(value = "numberSearch", required = false) String registrationNumber,
+            @RequestParam(value = "dateSearch", required = false) String numberDate)
+             throws ParseException {
         List<FileModel> list;
+        LocalDate haleluiaDate = null;
         String mainField = mainFieldOfInterest == "" ? null : mainFieldOfInterest;
         String secondField = secondaryFieldOfInterest == "" ? null : secondaryFieldOfInterest;
-        Date haleluiaDate = null;
+        String numberField = registrationNumber == "" ? null : registrationNumber;
+        System.out.println(registrationNumber);
         if (numberDate != null && numberDate != "") {
-            Date numberDateFormated = new SimpleDateFormat("yyyy-MM-dd").parse(numberDate);
-            SimpleDateFormat goodDateFormat = new SimpleDateFormat("MM/dd/yyyy");
-            String hope = goodDateFormat.format(numberDateFormated);
-            haleluiaDate = goodDateFormat.parse(hope);
+            String format = "yyyy-MM-dd";
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+            haleluiaDate = LocalDate.parse(numberDate, formatter);
         }
-        list = fileService.searchByFields(mainField, secondField, haleluiaDate);
-        mav.addObject("files", list);
-        return mav;
-
-    }
-
-    @GetMapping("/addFile")
-    public ModelAndView addFile() {
-        ModelAndView mav = new ModelAndView("addFile");
-        FileModel fileToSave = new FileModel();
-        mav.addObject("file-model", fileToSave);
-        return mav;
-    }
-
-    @PostMapping("/saveFile")
-    public void saveFile(@RequestParam("file") MultipartFile file,
-                         @RequestParam("mainFieldOfInterest") String mainFieldOfInterest,
-                         @RequestParam("secondaryFieldOfInterest") String secondaryFieldOfInterest,
-                         @RequestParam("registrationNumber") String registrationNumber,
-                         @RequestParam("numberDate") @DateTimeFormat(pattern = "MM/dd/yyyy") String numberDate,
-                         HttpServletResponse response) throws IOException, ParseException {
-        FileModel fileUpload = fileService.upload(file);
-        Date numberDateFormated = new SimpleDateFormat("yyyy-MM-dd").parse(numberDate);
-        SimpleDateFormat goodDateFormat = new SimpleDateFormat("MM/dd/yyyy");
-        String hope = goodDateFormat.format(numberDateFormated);
-        Date haleluiaDate = goodDateFormat.parse(hope);
-
-        if (!file.isEmpty()) {
-            try {
-                byte[] bytes = file.getBytes();
-                fileUpload.setData(bytes);
-                fileUpload.setMainFieldOfInterest(mainFieldOfInterest);
-                fileUpload.setSecondaryFieldOfInterest(secondaryFieldOfInterest);
-                fileUpload.setRegistrationNumber(registrationNumber);
-                fileUpload.setNumberDate(haleluiaDate);
-
-
-            } catch (Exception e) {
-
-            }
-        }
-        fileRepository.save(fileUpload);
-        response.sendRedirect("/api/v1/file/search");
+        list = fileService.searchByFields(mainField, secondField, numberField, haleluiaDate);
+        return ResponseEntity.ok(list);
 
     }
 
     @GetMapping("/download/{id}")
-    @ResponseBody
-    public ResponseEntity<byte[]> downloadFile(@PathVariable Long id) {
-        byte[] data = fileService.getFilebyId(id).getData();
-        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileService.getFilebyId(id).getName() + "\"")
-                .body(data);
+        public ResponseEntity<Resource> downloadFile(@PathVariable Long id) {
+            FileModel file = fileService.getFilebyId(id);
+            ByteArrayResource resource = new ByteArrayResource(file.getData());
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"");
+            headers.add(HttpHeaders.CONTENT_TYPE, file.getType());
+            headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, HttpHeaders.CONTENT_DISPOSITION);
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(resource);
+        }
 
-    }
-
-    @GetMapping("/junk/{id}")
-    public void deleteFile(@PathVariable Long id, HttpServletResponse response) throws IOException {
+    @DeleteMapping("/junk/{id}")
+    public ResponseEntity<?> deleteFile(@PathVariable Long id) throws IOException {
         fileRepository.deleteById(id);
-        response.sendRedirect("/api/v1/file/search");
+        return ResponseEntity.ok().build();
     }
 
 
-//    public void testHeader3(final RestTemplate restTemplate) {
-//        // Add a ClientHttpRequestInterceptor to the RestTemplate
-//        restTemplate.getInterceptors().add(new ClientHttpRequestInterceptor() {
-//            @Override
-//            public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
-//                request.getHeaders().set("Authorization", "Bearer " + token.getToken()); // Set the header for each request
-//                return execution.execute(request, body);
-//            }
-//        });
-//
-//
-//        ResponseEntity<Map> response = restTemplate.getForEntity("https://httpbin.org/user-agent", Map.class);
-//        System.out.println(response.getBody());
-//
-//        ResponseEntity<Map> response2 = restTemplate.getForEntity("https://httpbin.org/headers", Map.class);
-//        System.out.println(response2.getBody());
-//
-//        // Add the header to another URL
-//        ResponseEntity<Map> response3 = restTemplate.getForEntity("https://httpbin.org/get", Map.class);
-//        System.out.println(response3.getBody());
-//    }
 }
 
 
