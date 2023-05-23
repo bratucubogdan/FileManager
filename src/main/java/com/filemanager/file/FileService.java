@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -28,6 +29,10 @@ public class FileService {
         String secondaryField = "";
         String registrationNumber = "";
         LocalDate numberDate = null;
+        LocalDate fDate = null;
+        String fName = "";
+        String fNumber = "";
+        long fValue = 0;
 
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         Date yearSystem = new Date(System.currentTimeMillis());
@@ -36,7 +41,8 @@ public class FileService {
 
 
         byte[] data = fileUpload.getBytes();
-        FileModel fileDb = new FileModel(name, mainField, secondaryField, registrationNumber, numberDate, upDate, type, data);
+        FileModel fileDb = new FileModel(name, mainField, secondaryField, registrationNumber, numberDate, fDate, fName, fNumber, fValue, upDate, type, data);
+
         return fileDb;
     }
 

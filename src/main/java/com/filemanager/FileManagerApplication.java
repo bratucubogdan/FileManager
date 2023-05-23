@@ -15,15 +15,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @SpringBootApplication(exclude = { SecurityAutoConfiguration. class })
 
 public class FileManagerApplication {
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(@NotNull CorsRegistry registry) {
-                registry.addMapping("/").allowedOrigins("http://localhost:3000").allowedHeaders("Content-Disposition");
-            }
-        };
-    }
+
     public static void main(String[] args) {
         SpringApplication.run(FileManagerApplication.class, args);
     }

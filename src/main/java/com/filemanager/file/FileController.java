@@ -1,34 +1,30 @@
 package com.filemanager.file;
 
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
+
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000/")
+@CrossOrigin(origins = "http://10.100.0.114:3000/")
 @RequestMapping("/api/v1/file")
 public class FileController {
-    @Autowired
-    FileService fileService;
 
+    private final FileService fileService;
+    @Autowired
+    public  FileController (FileService fileService){
+        this.fileService = fileService;
+    }
 
     @Autowired
     FileRepository fileRepository;
@@ -39,17 +35,28 @@ public class FileController {
                        @RequestParam("mainFieldOfInterest") String main,
                        @RequestParam("secondaryFieldOfInterest") String second,
                        @RequestParam("registrationNumber") String rNum,
-                       @RequestParam("numberDate") String numberDate
+                       @RequestParam("numberDate") String numberDate,
+                       @RequestParam("fDate") String fDate,
+                       @RequestParam("fName") String fName,
+                       @RequestParam("fValue") String fValue,
+                       @RequestParam("fNumber") String fNumber
     ) throws IOException, ParseException {;
         FileModel fileToSave = fileService.upload(fileUpload);
         fileToSave.setMainFieldOfInterest(main);
         fileToSave.setSecondaryFieldOfInterest(second);
         fileToSave.setRegistrationNumber(rNum);
-        String format = "yyyy-MM-dd";
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
-        LocalDate date = LocalDate.parse(numberDate, formatter);
+        fileToSave.setfDate(LocalDate.parse(fDate));
+        fileToSave.setfName(fName);
+        fileToSave.setfNumber(fNumber);
+        fileToSave.setfValue(Double.valueOf(fValue));
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat myFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String reformatDate = myFormat.format(format.parse(numberDate));
+        DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("d/MM/yyyy");
+        LocalDate date = LocalDate.parse(reformatDate, formatter2);
         fileToSave.setNumberDate(date);
         fileRepository.save(fileToSave);
+        System.out.println(reformatDate);
 
     }
 
@@ -67,11 +74,19 @@ public class FileController {
         String numberField = registrationNumber == "" ? null : registrationNumber;
         System.out.println(registrationNumber);
         if (numberDate != null && numberDate != "") {
-            String format = "yyyy-MM-dd";
+            String format = "dd/MM/yyyy";
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
             haleluiaDate = LocalDate.parse(numberDate, formatter);
         }
         list = fileService.searchByFields(mainField, secondField, numberField, haleluiaDate);
+        for(FileModel i: list){
+            String format = "d/MM/yyyy";
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+            String k = i.getNumberDate().format(formatter);
+            LocalDate goodformat = LocalDate.parse(k,formatter);
+            i.setNumberDate(goodformat);
+        }
+
         return ResponseEntity.ok(list);
 
     }

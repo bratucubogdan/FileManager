@@ -5,7 +5,7 @@ import {faDownload, faEdit, faList, faRedo, faSearch, faTrash} from '@fortawesom
 import axios from 'axios';
 import MyToast from "./MyToast";
 import axiosInstance from "./Axios";
-
+import { format } from 'date-fns'
 class FileList extends React.Component {
     constructor(props) {
         super(props);
@@ -99,9 +99,11 @@ class FileList extends React.Component {
 
         return (
             <div>
+
+                {/*Search*/}
                 <div>
 
-                    <Card className={"border border-dark bg-dark text-white"}>
+                    <Card className={"border border-dark bg-dark text-white"} style={{width: 1410}}>
                         <Card.Header><FontAwesomeIcon icon={faSearch}/> Search </Card.Header>
                         <Form onSubmit={this.submitSearch} id="fileSearchId">
                             <Card.Body>
@@ -160,6 +162,7 @@ class FileList extends React.Component {
                                                 type="date"
                                                 name="dateSearch"
                                                 value={dateSearch}
+                                                placeholder={"Data inceput"}
                                                 onChange={this.searchChange}/>
                                         </Form.Group>
                                     </Col>
@@ -183,37 +186,50 @@ class FileList extends React.Component {
                         </Form>
                     </Card>
                 </div>
+                {/*Toast Pop Up Delete*/}
                 <div style={{"display": this.state.show ? "block" : "none"}}>
                     <MyToast children={{show: this.state.show, message: "File deleted successfully.", type: "danger"}}/>
                 </div>
-                <Card className="border border-dark bg-dark text-white">
+                {/* File List Table */}
+                <div>
+                <Card className="border border-dark bg-dark text-white" style={{width: 1410}}>
                     <Card.Header><FontAwesomeIcon icon={faList}/> File List </Card.Header>
                     <Card.Body>
                         <Table bordered hover striped variant={"dark"}>
                             <thead>
                             <tr>
+                                <th className=" text-center">Numar Registrul Unic pentru Facturi - Contabile</th>
                                 <th className=" text-center">Nume</th>
-                                <th className=" text-center">Institutia de provenienta</th>
+                                <th className=" text-center">Provenienta</th>
                                 <th className=" text-center">Tipul documentului</th>
-                                <th className=" text-center">Numar de inregistrare</th>
-                                <th className=" text-center">Data inregestrare (FORMAT: yyyy-MM-dd)</th>
-                                <th className=" text-center">Data Incarcare</th>
+                                <th className=" text-center">Numar de inregistrare REGISTRATURA</th>
+                                <th className=" text-center">Data  REGISTRATURA</th>
+                                <th className=" text-center">Data  Registrul Unic pentru Facturi - Contabile</th>
+                                <th className=" text-center">Numar Factura</th>
+                                <th className=" text-center">Data Emiterii Facturii</th>
+                                <th className=" text-center">Furnziorul</th>
+                                <th className=" text-center">Valoare totala factura cu TVA</th>
                                 <th className=" text-center">Comenzi</th>
                             </tr>
                             </thead>
                             <tbody>
                             {this.state.files.length === 0 ?
                                 <tr align="center">
-                                    <td colSpan="7">{this.state.files.length} Files Available.</td>
+                                    <td colSpan="12">{this.state.files.length} Files Available.</td>
                                 </tr> :
                                 this.state.files.map((file) => (
                                     <tr key={file.id}>
+                                        <td>{file.id}</td>
                                         <td>{file.name}</td>
                                         <td>{file.mainFieldOfInterest}</td>
                                         <td>{file.secondaryFieldOfInterest}</td>
                                         <td>{file.registrationNumber}</td>
-                                        <td>{file.numberDate}</td>
+                                        <td>{format(new Date(file.numberDate), 'dd/MM/yyyy')}</td>
                                         <td>{file.date}</td>
+                                        <td>{file.fNumber !== null ? file.fNumber : 'N/A'}</td>
+                                        <td>{file.fDate !== null ? format(new Date(file.fDate), 'dd/MM/yyyy') : 'N/A'}</td>
+                                        <td>{file.fName !== null ? file.fName : 'N/A'}</td>
+                                        <td>{file.fValue !== null ? file.fValue.toLocaleString() : 'N/A'}</td>
                                         <td>
                                             <ButtonGroup>
                                                 <Button size={"sm"} variant={"outline-primary"}
@@ -230,6 +246,7 @@ class FileList extends React.Component {
                         </Table>
                     </Card.Body>
                 </Card>
+                </div>
             </div>
 
         )

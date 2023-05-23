@@ -31,10 +31,10 @@ export default class LogIn extends React.Component {
         formData.append('email', this.state.email);
         formData.append('password', this.state.password);
 
-        axios.post("http://localhost:8080/api/v1/auth/register", formData)
+        axios.post("http://10.100.0.114:8080/api/v1/auth/register", formData)
             .then(response =>{
                 console.log(response.data)
-                window.location.href= 'http://localhost:3000/login'
+                window.location.href= 'http://10.100.0.114:3000/login'
             })
     }
     credentialChange = event => {

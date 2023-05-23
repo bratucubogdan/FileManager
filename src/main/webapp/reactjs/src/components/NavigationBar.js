@@ -22,7 +22,7 @@ class NavigationBar extends React.Component {
     handleLogout = () => {
         localStorage.removeItem('token'); // remove token from local storage
         this.setState({ isLoggedIn: false }); // update state
-        window.location.href = 'http://localhost:3000/';
+        window.location.href = 'http://10.100.0.114:3000/';
     };
     render() {
         return (

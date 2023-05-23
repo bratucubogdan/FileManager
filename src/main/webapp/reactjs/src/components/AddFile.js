@@ -4,7 +4,10 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faPlusSquare, faSave, faUndo} from '@fortawesome/free-solid-svg-icons'
 import MyToast   from "./MyToast";
 import axiosInstance from "./Axios";
-import axios from "axios";
+import 'react-datepicker/dist/react-datepicker.css'
+import {DatePicker} from "@syncfusion/ej2-react-calendars";
+
+
 export default class AddFile extends React.Component {
     constructor(props) {
         super(props);
@@ -19,13 +22,16 @@ export default class AddFile extends React.Component {
         secondaryFieldOfInterest: '',
         registrationNumber: '',
         numberDate: '',
+        fNumber:'',
+        fName:'',
+        fDate:'',
+        fValue:'',
         fileUpload: ''
     }
 
     resetFile = () => {
         this.setState(() => this.initialState)
     }
-
 
     submitFile = event => {
         event.preventDefault();
@@ -36,6 +42,10 @@ export default class AddFile extends React.Component {
         formData.append('registrationNumber', this.state.registrationNumber);
         formData.append('numberDate', this.state.numberDate);
         formData.append('fileUpload', this.state.fileUpload);
+        formData.append('fNumber', this.state.fNumber);
+        formData.append('fName', this.state.fName);
+        formData.append('fDate', this.state.fDate);
+        formData.append('fValue', this.state.fValue);
 
 
         axiosInstance.post("/upload", formData)
@@ -64,7 +74,7 @@ export default class AddFile extends React.Component {
     }
 
     render() {
-        const {mainFieldOfInterest, secondaryFieldOfInterest, registrationNumber, numberDate, data } = this.state
+        const {mainFieldOfInterest, secondaryFieldOfInterest, registrationNumber, numberDate, data, fNumber, fName, fDate, fValue } = this.state
 
 
         return (
@@ -76,21 +86,25 @@ export default class AddFile extends React.Component {
                     <Card.Header><FontAwesomeIcon icon={faPlusSquare}/> Add File</Card.Header>
                     <Form onReset= {this.resetFile} onSubmit={this.submitFile} id="fileFormId"  encType="multipart/form-data">
                         <Card.Body>
+                            <Form.Label>Provenienta</Form.Label>
                             <Form.Group className="mb-3" controlId="formGridMainFieldOfInterest">
                                 <Form.Select
                                     autoComplete={"off"}
-                                    aria-label="Default select example"
+                                    aria-label="Provenienta"
                                     name="mainFieldOfInterest"
                                     value={mainFieldOfInterest}
                                     onChange={this.fileChange}>
-                                    <option>Institutia de Provenienta</option>
+                                    <option>Provenienta</option>
                                     <option value="CASA">CASA</option>
                                     <option value="CJI">CJI</option>
                                     <option value="DSP">DSP</option>
                                     <option value="MS">MS</option>
+                                    <option value="REGISTRATURA">REGISTRATURA</option>
+
                                 </Form.Select>
                             </Form.Group>
 
+                            <Form.Label>Tipul Documentului</Form.Label>
                             <Form.Group className="mb-3" controlId="formGridSecondaryFieldOfInterest">
                                 <Form.Select
                                     autoComplete={"off"}
@@ -106,6 +120,7 @@ export default class AddFile extends React.Component {
                                 </Form.Select>
                             </Form.Group>
 
+                            <Form.Label>Numar de inregistrare REGISTRATURA</Form.Label>
                             <Form.Group className="mb-3" controlId="formGridRegistrationNumber">
                                 <Form.Control
                                     autoComplete={"off"}
@@ -116,6 +131,7 @@ export default class AddFile extends React.Component {
                                     onChange={this.fileChange}/>
                             </Form.Group>
 
+                            <Form.Label>Data numar de inregistrare REGISTRATURA</Form.Label>
                             <Form.Group className="mb-3" controlId="formGridNumberDate">
                                 <Form.Control
                                     autoComplete={"off"}
@@ -124,7 +140,58 @@ export default class AddFile extends React.Component {
                                     value={numberDate}
                                     onChange={this.fileChange}/>
                             </Form.Group>
+                            {
+                                secondaryFieldOfInterest === 'FACTURA' && (
+                                    <>
+                                        <Form.Label>Numar Factura</Form.Label>
+                                        <Form.Group className="mb-3" controlId="formGridfNumber">
+                                <Form.Control
+                                    autoComplete={"off"}
+                                    type="fNumber"
+                                    placeholder="Numar Factura"
+                                    name="fNumber"
+                                    value={fNumber}
+                                    onChange={this.fileChange}/>
 
+                            </Form.Group>
+
+                                        <Form.Label>Data Factura</Form.Label>
+                            <Form.Group className="mb-3" controlId="formGridfDate">
+                                <Form.Control
+                                    autoComplete={"off"}
+                                    type="date"
+                                    placeholder="Data Factura"
+                                    name="fDate"
+                                    value={fDate}
+                                    onChange={this.fileChange}/>
+
+                            </Form.Group>
+
+                                        <Form.Label>Furnizor</Form.Label>
+                            <Form.Group className="mb-3" controlId="formGridfName">
+                                <Form.Control
+                                    autoComplete={"off"}
+                                    type="fName"
+                                    placeholder="Furnizor"
+                                    name="fName"
+                                    value={fName}
+                                    onChange={this.fileChange}/>
+
+                            </Form.Group>
+                                        <Form.Label>Total Factura cu TVA</Form.Label>
+                            <Form.Group className="mb-3" controlId="formGridfValue">
+                                <Form.Control
+                                    autoComplete={"off"}
+                                    type="fValue"
+                                    placeholder="Total Factura"
+                                    name="fValue"
+                                    value={fValue}
+                                    onChange={this.fileChange}/>
+                            </Form.Group>
+                                    </>
+                    )
+                    }
+                            <Form.Label>Incarcare Fisier</Form.Label>
                             <Form.Group controlId="formGridFile" className="mb-3">
                                 <Form.Control
                                     autoComplete={"off"}

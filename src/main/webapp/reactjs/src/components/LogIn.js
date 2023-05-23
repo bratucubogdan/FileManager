@@ -35,13 +35,13 @@ credentialChange = event => {
         formData.append('email', this.state.email);
         formData.append('password', this.state.password);
 
-        axios.post("http://localhost:8080/api/v1/auth/authenticate", formData)
+        axios.post("http://10.100.0.114:8080/api/v1/auth/authenticate", formData)
             .then(response => {
                 const token = response.data;
                 localStorage.setItem('token', token);
                 this.setState({ token });
                 if(localStorage.length !== null){
-                    window.location.href = 'http://localhost:3000/';
+                    window.location.href = 'http://10.100.0.114:3000/';
                 }
 
             });
